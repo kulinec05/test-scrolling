@@ -1,33 +1,28 @@
-import { Button, Card, CardContent, Stack, Typography } from '@mui/material';
-import axios from 'axios';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Box, Button, Card, CardContent, Stack, Typography } from '@mui/material';
+import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import './App.css';
 import AuthModal from './AuthModal'
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchingOff,fetchingOn, fetchingPosts ,fetchPosts } from './reduxToolkit/PostsToolkitSlice';
+import { fetchingOn, fetchPosts, addPost } from './reduxToolkit/PostsToolkitSlice';
+import { logIn } from './reduxToolkit/logInAction'
 
 const App = () => {
-  const state = useSelector((state:any)=>state.data)
+  const state = useSelector((state: any) => state.data)
   const dispatch = useDispatch()
-  const [currentPage, setCurrentPage] = useState(0);
-  const [fetching, setFetching] = useState(true);
-  const [fetchOver,setFetchOver] = useState(false)
+
 
   useEffect(() => {
-    console.log(state)
-    if(state.fetching && !state.fetchOver){
-            dispatch(fetchPosts(state.currentPage))
+    if (state.fetching && !state.fetchOver) {
+      dispatch(fetchPosts(state.currentPage))
     }
-
   }, [state.fetching])
 
   const scrollHandler = (e: any) => {
 
 
-    if (e.target.documentElement.scrollHeight - (e.target.documentElement.scrollTop + window.innerHeight) <= 100 ) {
+    if (e.target.documentElement.scrollHeight - (e.target.documentElement.scrollTop + window.innerHeight) <= 100) {
       dispatch(fetchingOn())
-      console.log(e.target.documentElement.scrollHeight - (e.target.documentElement.scrollTop + window.innerHeight))
     }
   }
 
@@ -43,18 +38,41 @@ const App = () => {
   const [open, setOpen] = useState(false);
 
 
-  //useFrom
   const { register, handleSubmit } = useForm();
-  const onSubmit = (data: any) => console.log(data);
+  const onSubmit = (data: any) => {
+    dispatch(logIn(data.UserName, data.password))
+  }
+  const titleRef = useRef<any>()
+  const bodyRef = useRef<any>()
+  const onPost = () => {
+    let post = {
+      title: titleRef?.current?.value,
+      body: bodyRef?.current?.value,
+      id: Date.now(),
+      userId: Date.now()
+    }
+    dispatch(addPost(post))
+  }
 
   return (
     <div>
-      <Button onClick={()=>{
-        console.log(state)
-      }}>qwertyu</Button>
       <AuthModal open={open} setOpen={setOpen} register={register} handleSubmit={handleSubmit} onSubmit={onSubmit} />
+
+      {state.logged &&
+        <Box
+          component="form"
+          sx={{
+            '& > :not(style)': { m: 1 },
+          }}
+          noValidate
+          autoComplete="off"
+        >
+          <input ref={titleRef} placeholder="Title" />
+          <input ref={bodyRef} placeholder="Description" />
+          <Button onClick={onPost} >POST</Button>
+        </Box>}
       <Stack spacing={2} m={2}>
-        {state.posts.map((post: any) => <Card sx={{ minWidth: 275 }}>
+        {state.posts.map((post: any) => <Card key={post.id} sx={{ minWidth: 275 }}>
           <CardContent>
             <Typography variant="h5">
               {post.title}

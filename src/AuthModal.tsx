@@ -1,12 +1,14 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
-import { Input, TextField } from '@mui/material';
+import { TextField } from '@mui/material';
+import { useDispatch, useSelector } from 'react-redux';
+import { logOut } from './reduxToolkit/PostsToolkitSlice'
 
 const style = {
-  display:'flex',
+  display: 'flex',
+  flexDirection: 'column',
   position: 'absolute' as 'absolute',
   top: '50%',
   left: '50%',
@@ -19,12 +21,18 @@ const style = {
 
 export default function AuthModal({ open, setOpen, register, handleSubmit, onSubmit }: any) {
 
+
+
+  const handleLogOut = () => dispatch(logOut())
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const state = useSelector((state: any) => state.data)
+  const dispatch = useDispatch()
 
   return (
     <div>
-      <Button onClick={handleOpen}>Log In</Button>
+      {!state.logged ? <Button onClick={handleOpen} >LOG IN</Button> :
+        <Button onClick={handleLogOut} >LOG OUT</Button>}
       <Modal
         open={open}
         onClose={handleClose}
@@ -32,9 +40,13 @@ export default function AuthModal({ open, setOpen, register, handleSubmit, onSub
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}
-        component='form'
-        autoComplete="off" >
-          <form onSubmit={handleSubmit(onSubmit)}>
+        >
+          <form style={{ display: 'flex', flexDirection: 'column' }} onSubmit={() => {
+
+            handleClose()
+
+            handleSubmit(onSubmit)()
+          }}>
             <TextField
               required
               id="outlined-required"
@@ -42,13 +54,14 @@ export default function AuthModal({ open, setOpen, register, handleSubmit, onSub
               placeholder='UserName'
               {...register("UserName")} />
             <TextField
-            required
+              required
               id="outlined-password-input"
               label="Password"
               type="password"
               autoComplete="current-password" placeholder='Password'
               {...register("password")} />
-            <Input type="submit" />
+            <Button type="submit" >LOG IN</Button>
+
           </form>
         </Box>
       </Modal>

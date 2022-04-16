@@ -1,24 +1,43 @@
-import React from 'react';
-import logo from './logo.svg';
+import { Button, Card, CardContent, Stack, Typography } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import './App.css';
+import AuthModal from './AuthModal'
 
-function App() {
+const App = () => {
+  const [posts, setPosts] = useState([])
+
+
+  const [open, setOpen] = useState(false);
+
+
+  //useFrom
+  const { register, handleSubmit } = useForm();
+  const onSubmit = (data:any) => console.log(data);
+
+  useEffect(()=>{
+    fetch('https://jsonplaceholder.typicode.com/posts')
+    .then(res=>res.json())
+    .then(res=>setPosts(res))
+  },[])
+
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <AuthModal  open={open} setOpen={setOpen} register={register} handleSubmit={handleSubmit} onSubmit={onSubmit}/>
+      <Stack spacing={2} m={2}>
+        {posts.map((post:any)=><Card sx={{ minWidth: 275 }}>
+        <CardContent>
+          <Typography variant="h5">
+            {post.title}
+          </Typography>
+          <Typography>
+          {post.body}
+          </Typography>
+        </CardContent>
+      </Card>)}
+      </Stack>
+      
     </div>
   );
 }

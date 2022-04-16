@@ -30,8 +30,6 @@ const PostsToolkitSlice = createSlice({
             state.logged = false
         },
         fetchingPosts(state: any, action) {
-            console.log(action.payload)
-
             state.posts = [...state.posts, ...action.payload]
             state.currentPage += 1
             state.fetching = false

@@ -8,7 +8,7 @@ import { fetchingOn, fetchPosts, addPost } from './reduxToolkit/PostsToolkitSlic
 import { logIn } from './reduxToolkit/logInAction'
 
 const App = () => {
-  const state = useSelector((state: any) => state.data)
+  const state = useSelector((state:any) => state.data)
   const dispatch = useDispatch()
 
 
@@ -39,7 +39,7 @@ const App = () => {
 
 
   const { register, handleSubmit } = useForm();
-  const onSubmit = (data: any) => {
+  const onSubmit = (data: {UserName:string,password:string}) => {
     dispatch(logIn(data.UserName, data.password))
   }
   const titleRef = useRef<any>()
@@ -72,7 +72,7 @@ const App = () => {
           <Button onClick={onPost} >POST</Button>
         </Box>}
       <Stack spacing={2} m={2}>
-        {state.posts.map((post: any) => <Card key={post.id} sx={{ minWidth: 275 }}>
+        {state.posts.map((post: {id:number,userId:number,title:string,body:string}) => <Card key={post.id} sx={{ minWidth: 275 }}>
           <CardContent>
             <Typography variant="h5">
               {post.title}
